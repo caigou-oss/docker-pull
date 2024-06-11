@@ -6,7 +6,7 @@ on:
       IMAGE_NAME:
         description: '原镜像名称:版本'
         required: true
-        default: 'mysql/mysql-server'
+        default: 'mysql/mysql-server:latest'
       NEW_NAME:
         description: '同步后镜像名称:版本'
         required: true
@@ -55,7 +55,9 @@ jobs:
         run: |
           docker pull --platform ${{ github.event.inputs.ARCH }} ${{ github.event.inputs.IMAGE_NAME }}
           docker tag ${{ github.event.inputs.IMAGE_NAME }} ${{ github.event.inputs.TARGET_REGISTRY }}/${{ github.event.inputs.TARGET_REPOSITORY }}/${{ github.event.inputs.NEW_NAME }}
+          
           docker push ${{ github.event.inputs.TARGET_REGISTRY }}/${{ github.event.inputs.TARGET_REPOSITORY }}/${{ github.event.inputs.NEW_NAME }}
+        
         continue-on-error: true
       
       - name: 创建镜像信息文件
