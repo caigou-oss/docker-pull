@@ -14,11 +14,11 @@ on:
       TARGET_REGISTRY:
         description: '仓库地址'
         required: true
-        default: 'registry.cn-chengdu.aliyuncs.com'
+        default: 'harbor.zzjspd.com'
       TARGET_REPOSITORY:
         description: '空间名称'
         required: true
-        default: 'aopkcn'
+        default: 'public'
       ARCH:
         description: '系统架构'
         required: true
@@ -57,7 +57,17 @@ jobs:
           docker tag ${{ github.event.inputs.IMAGE_NAME }} ${{ github.event.inputs.TARGET_REGISTRY }}/${{ github.event.inputs.TARGET_REPOSITORY }}/${{ github.event.inputs.NEW_NAME }}
           docker push ${{ github.event.inputs.TARGET_REGISTRY }}/${{ github.event.inputs.TARGET_REPOSITORY }}/${{ github.event.inputs.NEW_NAME }}
         continue-on-error: true
-
+      
+      - name: 创建镜像信息文件
+        run: echo "${{ github.event.inputs.TARGET_REGISTRY }}/${{ github.event.inputs.TARGET_REPOSITORY }}/${{ github.event.inputs.NEW_NAME }}:${{ github.event.inputs.IMAGE_NAME }}" > image_info.txt
+      
+      - name: 上传镜像信息文件作为工件
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: image-info
+          path: image_info.txt
+          
       - name: 检查镜像推送成功
         if: ${{ steps.pull_tag_push.outcome == 'success' }}
         run: echo "Docker 镜像推送成功"
