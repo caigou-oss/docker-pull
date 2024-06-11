@@ -60,15 +60,6 @@ jobs:
         
         continue-on-error: true
       
-      - name: 创建镜像信息文件
-        run: echo "${{ github.event.inputs.TARGET_REGISTRY }}/${{ github.event.inputs.TARGET_REPOSITORY }}/${{ github.event.inputs.NEW_NAME }}:${{ github.event.inputs.IMAGE_NAME }}" > image_info.txt
-      
-      - name: 上传镜像信息文件作为工件
-        if: ${{ success() }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: image-info
-          path: image_info.txt
           
       - name: 检查镜像推送成功
         if: ${{ steps.pull_tag_push.outcome == 'success' }}
